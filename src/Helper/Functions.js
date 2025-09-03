@@ -47,13 +47,14 @@ const getContentFromMsg = (msg) => {
 const getSender = (msg, client) => msg.key.fromMe ? client.user.id : msg.key.participant || msg.key.remoteJid;
 
 const lidToJid = async (client, senderLid, groupJid, force = false) => {
-    const jid = await Baileys.lidToJid(client, senderLid, {
-        ...(groupJid && {
-            groupId: groupJid
-        }),
-        force
-    });
-    return jid;
+    if (!groupJid?.endsWith("@g.us")) return senderLid;
+    const groupCache = client.ws.config.cachedGroupMetadata;
+    const getMetadata = groupCache.length ? groupCache : client.groupMetadata;
+    const { participants } = await getMetadata(groupJid);
+    const participant = participants.find(
+        (part) => (part.lid === senderLid || part.id === senderLid)
+    );
+    return participant?.jid || senderLid;
 };
 
 const decodeJid = (jid) => {
