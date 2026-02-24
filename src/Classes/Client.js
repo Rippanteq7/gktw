@@ -13,6 +13,7 @@ const Commands = require("../Handler/Commands.js");
 
 class Client {
     constructor(opts) {
+        this.baileysOpts = opts.baileys || {};
         const authOpts = opts.auth || {};
         this.authDir = authOpts.dir || "./auth";
         this.phoneNumber = authOpts.phoneNumber || null;
@@ -21,14 +22,14 @@ class Client {
         this.useStore = authOpts.useStore || false;
 
         const connectionOpts = opts.connection || {};
-        this.browser = connectionOpts.browser || Baileys.Browsers.ubuntu("Chrome");
+        this.browser = connectionOpts.browser || Baileys.Browsers.macOS("Safari");
         this.WAVersion = connectionOpts.version || null;
         this.alwaysOnline = connectionOpts.alwaysOnline || true;
         this.selfReply = connectionOpts.selfReply || false;
 
         const messagingOpts = opts.messaging || {};
         this.autoRead = messagingOpts.autoRead || false;
-        this.prefix = messagingOpts.prefix || /^[°•π÷×¶∆£¢€¥®™+✓_=|/~!?@#%^&.©^]/i;
+        this.prefix = messagingOpts.prefix || /^[°•π÷×*¶∆£¢€¥®™+✓_=|/~!?@#%^&.,©^]/i;
 
         const databaseOpts = opts.database || {};
         this.databaseDir = databaseOpts.dir || "./database";
@@ -270,6 +271,7 @@ class Client {
             ...(this.WAVersion ? {
                 version: this.WAVersion
             } : {}),
+            ...this.baileysOpts,
             browser: this.browser,
             logger: this.logger,
             printQRInTerminal: !this.usePairingCode,
